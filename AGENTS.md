@@ -12,11 +12,13 @@ uv run scripts/scrape_to_zip.py 'FACEBOOK_URL' --cookies '/path/to/facebook-cook
 
 For tool calls, prefer structured process arguments or correct shell quoting so URL query parameters are preserved. The script path may also be invoked by absolute path from another working directory.
 
-## First-run login assistance
+## Cookie-only authentication; no computer use
 
-When authentication has not been specified, ask which local browser/profile the user uses for Facebook, or whether they already have a Netscape cookie file. Use only the source they identify. Check Python/uv and guide setup through the environment's normal permission flow; do not replace the existing scraper.
+When a URL is supplied, find the user's Facebook login cookies locally and run the existing direct-HTTP scraper. Use their specified Netscape cookie file or browser/profile. If none is specified, try the default local Chrome cookie reader. If they use a different browser or the profile is unclear, ask which browser/profile to read. Check Python/uv and guide setup through normal permission prompts. Read only Facebook-domain cookies into memory; do not search unrelated profiles or export/print the cookie jar.
 
-If the selected session is missing, expired, denied, or challenged, ask the user to sign into Facebook themselves in that browser and confirm when ready. Do not ask for passwords, two-factor codes or raw cookie values, automate login, scan unrelated browser profiles, or bypass restrictions. If browser-cookie reading is unsupported, explain Netscape export using README.md, have the user keep the file outside this repository, and ask only for its local path. Do not request cookie uploads or chat pastes. A remote/chat-only agent cannot read the user's local browser: explain that a local terminal-capable agent session is needed. Resume the same request after the user restores the login; preserve failed-run recovery data.
+All authentication is through cookies. Reading a local browser cookie database is allowed; computer use and browser control are not. Never open/control browser windows, click Facebook, use Playwright/Selenium, automate login, or bypass access restrictions.
+
+If no valid Facebook cookies are available or the session is expired/challenged, ask the user to sign into Facebook themselves and confirm when ready, then retry the same cookie-based request. Do not ask for passwords, two-factor codes or raw cookie values. If local cookie decryption is unsupported, explain how the user can export their own Netscape cookie file outside the repo and ask only for its local path. Never request cookie uploads/chat pastes. A remote/chat-only agent cannot automatically access the user's local cookie files; explain when a local terminal-capable session is needed. Preserve failed-run recovery data.
 
 ## Output and cleanup
 

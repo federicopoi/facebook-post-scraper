@@ -5,7 +5,7 @@ description: Use when a Facebook business page URL should become a website-sourc
 
 # Facebook business data and photos to ZIP
 
-Read [AGENTS.md](AGENTS.md) for the shared workflow. Run the existing command from this project directory:
+Read [AGENTS.md](AGENTS.md) for the shared workflow. Find the user’s Facebook login cookies locally using the selected cookie file or local browser cookie reader. Make direct HTTP requests only: no computer use, browser control or automated login. If cookies are missing/expired, ask the user to sign in themselves, then retry. Run the existing command from this project directory:
 
 ```sh
 uv run scripts/scrape_to_zip.py 'FACEBOOK_URL'

@@ -1,12 +1,12 @@
 # Facebook Post Scraper
 
-Turn a Facebook business-page URL into a local ZIP of its available photos, business details and accessible reviews. Runs directly from the command line with **your own Facebook login cookies**. No Apify account, Facebook developer account or API key is required.
+Turn a Facebook business-page URL into a local ZIP of its available photos, business details and accessible reviews. Runs directly from the command line with **your own Facebook login cookies**. Authentication is cookie-based only: direct HTTP requests, no computer use, browser clicking or automated login. No Apify account, Facebook developer account or API key is required.
 
 This repository contains only the scraper. It does not include a website builder, anyone’s login session, environment configuration, downloaded photos, or live customer run records.
 
 ## Run it with Codex or Claude
 
-Open this repository in a **local Codex or Claude Code session** and give the agent a Facebook page URL. The included [AGENTS.md](AGENTS.md) and [CLAUDE.md](CLAUDE.md) explain the scraper workflow. You do not need to write or run the download commands yourself; the agent can check the setup, run the scraper and return the ZIP.
+Open this repository in a **local Codex or Claude Code session** and give the agent a Facebook page URL. Ask it to **find your Facebook login cookies locally and run the scraper without computer use or browser automation**. The included [AGENTS.md](AGENTS.md) and [CLAUDE.md](CLAUDE.md) explain the scraper workflow. You do not need to write or run the download commands yourself; the agent can check the setup, run the scraper and return the ZIP.
 
 If you have not cloned the repo yet, paste this prompt into an agent that can run terminal commands on your computer. Replace `FACEBOOK_PAGE_URL` with the actual business-page URL:
 
@@ -19,18 +19,23 @@ checkout. Read README.md and AGENTS.md before running anything. Check Python
 and uv, and help me install any missing requirements using the normal
 permission prompts. Use the existing scraper, not a new implementation.
 
-Use my own Facebook login. If I have not specified an authentication source,
-ask which browser/profile I use for Facebook, or whether I already have a
-Netscape cookie file. Use only the browser/profile or local file I identify.
+Find my Facebook login cookies locally and use them for direct HTTP requests.
+Use the cookie file or browser/profile I specify. If I have not specified one,
+try the scraper's default local Chrome cookie reader. If I use another browser
+or the profile is unclear, ask me which one. Read only Facebook cookies; do not
+search unrelated profiles, print cookie values, or export the cookie jar.
 
-If I am not logged in, the session has expired, or Facebook requests a login
-challenge, ask me to sign into Facebook myself in that browser and tell you
-when I am ready. Do not ask for my password, 2FA code or raw cookie values.
-Do not automate login, search unrelated profiles or bypass restrictions.
+Use cookies only. Do not use computer use, open/control browser windows,
+click through Facebook, run Playwright/Selenium, or automate login.
+Reading a local browser cookie database is allowed; controlling the browser
+is not part of this workflow.
 
-If browser-cookie extraction is unavailable, guide me through exporting only
-my own Facebook cookies in Netscape format to a file outside the repo, then
-ask for its local path. Do not ask me to paste or upload the cookies into chat.
+If no valid Facebook login cookies are available, ask me to sign into Facebook
+myself in my browser and tell you when I am ready, then retry cookie reading.
+If browser-cookie decryption is unsupported, explain how I can supply my own
+Netscape cookie export outside the repo and ask only for its local file path.
+Do not ask for my password, 2FA code, cookie uploads or raw cookies in chat.
+Do not bypass a login challenge or access restriction.
 
 Once authentication is available, run scripts/scrape_to_zip.py for the URL.
 Collect all exposed photos unless I request a limit. Read the command's JSON
@@ -44,17 +49,19 @@ If the repo is already open in your agent, a shorter request is enough:
 
 ```text
 Download the photos and business information for FACEBOOK_PAGE_URL.
-Follow AGENTS.md. If my Facebook login is missing or expired, guide me through
-signing in myself, then continue and give me the verified ZIP.
+Follow AGENTS.md. Find my Facebook login cookies locally and use direct HTTP
+requests only, without computer use or browser automation. If valid cookies
+are unavailable, ask me to sign into Facebook myself, then retry and return
+the verified ZIP.
 ```
 
-**Login happens in your browser, not in the agent chat.** The agent needs local terminal/file access and your permission to read the selected browser profile or cookie file. A chat-only or remote/cloud session cannot automatically read the browser on your computer; use a local agent session for this workflow. The scraper itself does not open a login screen. On a login failure, the agent should pause for your action and retry after you confirm that the session is ready.
+**The agent reads cookies; it never operates your browser.** You perform any login yourself. The agent needs local terminal/file access and your permission to read the selected browser profile or cookie file. A chat-only or remote/cloud session cannot automatically read the browser on your computer; use a local agent session for this workflow. The scraper itself does not open a login screen or control a browser. On a login failure, the agent should pause for your action and retry after you confirm that the session is ready.
 
 ## Requirements
 
 - Python **3.11 or newer**.
 - [uv](https://docs.astral.sh/uv/getting-started/installation/) (recommended), or pip in a virtual environment.
-- Your own working Facebook login, supplied by a Netscape-format cookie file or an accessible local browser profile.
+- Your own Facebook login cookies, supplied by a Netscape-format cookie file or read locally from your browser profile.
 - Permission to access and download the target page’s content.
 
 ## Quick start: cookie file
@@ -80,7 +87,7 @@ A cookie file grants access to your account. **Never send it to someone else, co
 
 In cookie-file mode, the script reads only Facebook-domain cookies into memory, excludes expired cookies and unrelated domains, does not open a browser profile, and does not rewrite/export the cookie file. Photo CDN downloads use a separate session without your Facebook cookies.
 
-## Alternative: use your browser login directly
+## Find Facebook cookies locally (no computer use)
 
 ```sh
 uv run scripts/scrape_to_zip.py 'FACEBOOK_URL' --browser chrome
@@ -88,7 +95,9 @@ uv run scripts/scrape_to_zip.py 'FACEBOOK_URL' --browser edge --profile 'Default
 uv run scripts/scrape_to_zip.py 'FACEBOOK_URL' --browser firefox
 ```
 
-Chrome is the default browser; there is **no hard-coded personal browser profile**. Omit `--profile` to use the browser reader’s default, or choose your own profile name/path. `--browser` and `--cookies` are alternative authentication sources; do not combine them. `--profile` applies only to browser login.
+These commands read saved Facebook cookies from a local browser profile into memory and make direct HTTP requests. They do **not** open or control Chrome, Edge or Firefox. This is cookie-based authentication, not browser automation.
+
+Chrome is the default cookie source; there is **no hard-coded personal browser profile**. Omit `--profile` to use the browser reader’s default, or choose your own profile name/path. `--browser` and `--cookies` are alternative authentication sources; do not combine them. `--profile` applies only to browser login.
 
 Browser-cookie extraction depends on your operating system, browser encryption and profile permissions. macOS may ask for Keychain access. Some browser/OS combinations prevent decryption; use your own Netscape cookie export in that case. The scraper does not automate login or bypass session restrictions.
 
