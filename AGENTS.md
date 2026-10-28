@@ -12,6 +12,12 @@ uv run scripts/scrape_to_zip.py 'FACEBOOK_URL' --cookies '/path/to/facebook-cook
 
 For tool calls, prefer structured process arguments or correct shell quoting so URL query parameters are preserved. The script path may also be invoked by absolute path from another working directory.
 
+## First-run login assistance
+
+When authentication has not been specified, ask which local browser/profile the user uses for Facebook, or whether they already have a Netscape cookie file. Use only the source they identify. Check Python/uv and guide setup through the environment's normal permission flow; do not replace the existing scraper.
+
+If the selected session is missing, expired, denied, or challenged, ask the user to sign into Facebook themselves in that browser and confirm when ready. Do not ask for passwords, two-factor codes or raw cookie values, automate login, scan unrelated browser profiles, or bypass restrictions. If browser-cookie reading is unsupported, explain Netscape export using README.md, have the user keep the file outside this repository, and ask only for its local path. Do not request cookie uploads or chat pastes. A remote/chat-only agent cannot read the user's local browser: explain that a local terminal-capable agent session is needed. Resume the same request after the user restores the login; preserve failed-run recovery data.
+
 ## Output and cleanup
 
 - Each invocation creates its own fresh `facebook-photos-*` working folder inside `~/Downloads`.

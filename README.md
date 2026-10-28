@@ -4,6 +4,52 @@ Turn a Facebook business-page URL into a local ZIP of its available photos, busi
 
 This repository contains only the scraper. It does not include a website builder, anyone’s login session, environment configuration, downloaded photos, or live customer run records.
 
+## Run it with Codex or Claude
+
+Open this repository in a **local Codex or Claude Code session** and give the agent a Facebook page URL. The included [AGENTS.md](AGENTS.md) and [CLAUDE.md](CLAUDE.md) explain the scraper workflow. You do not need to write or run the download commands yourself; the agent can check the setup, run the scraper and return the ZIP.
+
+If you have not cloned the repo yet, paste this prompt into an agent that can run terminal commands on your computer. Replace `FACEBOOK_PAGE_URL` with the actual business-page URL:
+
+```text
+Use https://github.com/federicopoi/facebook-post-scraper to download the
+available photos and business information for FACEBOOK_PAGE_URL.
+
+Clone the repository into a new folder if needed; otherwise use the existing
+checkout. Read README.md and AGENTS.md before running anything. Check Python
+and uv, and help me install any missing requirements using the normal
+permission prompts. Use the existing scraper, not a new implementation.
+
+Use my own Facebook login. If I have not specified an authentication source,
+ask which browser/profile I use for Facebook, or whether I already have a
+Netscape cookie file. Use only the browser/profile or local file I identify.
+
+If I am not logged in, the session has expired, or Facebook requests a login
+challenge, ask me to sign into Facebook myself in that browser and tell you
+when I am ready. Do not ask for my password, 2FA code or raw cookie values.
+Do not automate login, search unrelated profiles or bypass restrictions.
+
+If browser-cookie extraction is unavailable, guide me through exporting only
+my own Facebook cookies in Netscape format to a file outside the repo, then
+ask for its local path. Do not ask me to paste or upload the cookies into chat.
+
+Once authentication is available, run scripts/scrape_to_zip.py for the URL.
+Collect all exposed photos unless I request a limit. Read the command's JSON
+result and verify that the final ZIP exists. Give me its local path, photo and
+review counts, any coverage warnings, and whether its temporary folder was
+removed. If blocked, explain the actual error and what I need to do next.
+Keep credentials and downloaded output out of Git. Do not build a website.
+```
+
+If the repo is already open in your agent, a shorter request is enough:
+
+```text
+Download the photos and business information for FACEBOOK_PAGE_URL.
+Follow AGENTS.md. If my Facebook login is missing or expired, guide me through
+signing in myself, then continue and give me the verified ZIP.
+```
+
+**Login happens in your browser, not in the agent chat.** The agent needs local terminal/file access and your permission to read the selected browser profile or cookie file. A chat-only or remote/cloud session cannot automatically read the browser on your computer; use a local agent session for this workflow. The scraper itself does not open a login screen. On a login failure, the agent should pause for your action and retry after you confirm that the session is ready.
+
 ## Requirements
 
 - Python **3.11 or newer**.
